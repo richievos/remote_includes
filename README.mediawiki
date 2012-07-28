@@ -72,3 +72,8 @@ Note the space in "&lt;!--" is just to make the github markup happy. It wouldn't
   curl -i localhost:8009/synchronous?no_magic=true
   # see the data magically filled in
   curl -i localhost:8009/synchronous
+
+==Misc==
+RemoteIncludes.setter= are non-threadsafe setters
+
+RemoteIncludes::Backend.setter= are threadsafe setters
