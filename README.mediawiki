@@ -1,0 +1,72 @@
+==Example Usage==
+%html
+  %body
+    <%= render_remote "/partial/header" %>
+
+==Output==
+===Edge Side Include (ESI) mode (http://en.wikipedia.org/wiki/Edge_Side_Includes)===
+  <html>
+    <body>
+      <esi:include src="/partial/header" .../>
+    </body>
+  </html>
+
+===Server Side Includes mode (http://wiki.nginx.org/HttpSsiModule) -- only supports local urls===
+  <html>
+    <body>
+      <!--# include virtual="/partial/header" -->
+    </body>
+  </html>
+
+===Synchronous mode (make the request synchronous when you say render_remote)===
+  <html>
+    <body>
+      <!-- the actual header here -->
+    </body>
+  </html>
+
+===Javascript mode (use the stock jquery or whatever stuff to do it) -- only works in the body===
+  <html>
+    <body>
+      <div data-content-url="/partial/header" class="autoReplace"/>
+    </body>
+  </html>
+
+==How to play with this==
+
+===Edge Side Includes===
+
+  brew install varnish
+
+  killall varnishd # reset between tests
+  varnishd -a localhost:8009 -f ./spec/server_example/esi_caching.vcl
+  
+  ruby -I lib server_example/example_server.rb &
+  
+  # see the template
+  curl -i localhost:8009/esi
+  # see the data magically filled in
+  curl -i localhost:8009/esi?no_magic=true
+
+===Server Side Includes===
+
+  brew install nginx
+  
+  sudo nginx -s stop
+  sudo nginx -c `pwd`/server_example/conf/nginx.conf
+
+  ruby -I lib server_example/example_server.rb &
+  
+  # see the template
+  curl -i localhost:8009/ssi?no_magic=true
+  # see the data magically filled in
+  curl -i localhost:8009/ssi
+
+===Synchronous mode===
+
+  ruby -I lib server_example/example_server.rb &
+
+  # see the template
+  curl -i localhost:8009/synchronous?no_magic=true
+  # see the data magically filled in
+  curl -i localhost:8009/synchronous
